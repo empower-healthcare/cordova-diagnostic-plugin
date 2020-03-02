@@ -102,6 +102,14 @@ var Diagnostic_Bluetooth = (function(){
             []);
     };
 
+    Diagnostic_Bluetooth.isBluetoothAuthorized = function(successCallback, errorCallback) {
+        return cordova.exec(Diagnostic._ensureBoolean(successCallback),
+            errorCallback,
+            'Diagnostic_Bluetooth',
+            'isBluetoothAuthorized',
+            []);
+    };
+
     /**
      * Requests Bluetooth authorization for the application.
      * The outcome of the authorization request can be determined by registering a handler using `registerBluetoothStateChangeHandler()`.

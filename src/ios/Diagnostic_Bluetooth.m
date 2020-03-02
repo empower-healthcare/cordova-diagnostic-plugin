@@ -61,6 +61,18 @@ static NSString*const LOG_TAG = @"Diagnostic_Bluetooth[native]";
 
 }
 
+- (void) isBluetoothAuthorized: (CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        @try {
+            [diagnostic sendPluginResultBool:[self isBluetoothAuthorized] :command];
+        }
+        @catch (NSException *exception) {
+            [diagnostic handlePluginException:exception :command];
+        }
+    }];
+}
+
 - (void) requestBluetoothAuthorization: (CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
@@ -174,6 +186,15 @@ static NSString*const LOG_TAG = @"Diagnostic_Bluetooth[native]";
                                  queue:dispatch_get_main_queue()
                                  options:@{CBCentralManagerOptionShowPowerAlertKey: @(NO)}];
         [self centralManagerDidUpdateState:self.bluetoothManager]; // Send initial state
+    }
+}
+
+- (BOOL) isBluetoothAuthorized
+{
+    if([CBPeripheralManager authorizationStatus] == CBPeripheralManagerAuthorizationStatusAuthorized) {
+        return true;
+    } else {
+        return false;
     }
 }
 
