@@ -16,6 +16,10 @@ static Diagnostic* diagnostic;
 // Internal constants
 static NSString*const LOG_TAG = @"Diagnostic_Bluetooth[native]";
 
+- (BOOL) isGreaterOrEqualsIos13 {
+    return [[[UIDevice currentDevice] systemVersion] floatValue] >= 13.0;
+}
+
 - (void)pluginInitialize {
     
     [super pluginInitialize];
@@ -31,12 +35,17 @@ static NSString*const LOG_TAG = @"Diagnostic_Bluetooth[native]";
 {
     [self.commandDelegate runInBackground:^{
         @try {
-            NSString* state = [self getBluetoothState];
             bool bluetoothEnabled;
-            if([state  isEqual: @"powered_on"]){
-                bluetoothEnabled = true;
-            }else{
-                bluetoothEnabled = false;
+            if ([self isGreaterOrEqualsIos13]) {
+                CBCentralManager* manager = [[CBCentralManager alloc] init];
+                bluetoothEnabled = [manager authorization] == CBManagerAuthorizationAllowedAlways;
+            } else {
+                NSString* state = [self getBluetoothState];
+                if([state  isEqual: @"powered_on"]){
+                    bluetoothEnabled = true;
+                }else{
+                    bluetoothEnabled = false;
+                }
             }
             [diagnostic sendPluginResultBool:bluetoothEnabled :command];
         }
@@ -61,7 +70,19 @@ static NSString*const LOG_TAG = @"Diagnostic_Bluetooth[native]";
 
 }
 
-- (void) isBluetoothAuthorized: (CDVInvokedUrlCommand*)command
+- (void) isGreaterOrEqualsIos13: (CDVInvokedUrlCommand *)command
+{
+    [self.commandDelegate runInBackground:^{
+        @try {
+            [diagnostic sendPluginResultBool:[self isGreaterOrEqualsIos13] :command];
+        }
+        @catch (NSException *exception) {
+            [diagnostic handlePluginException:exception :command];
+        }
+    }];
+}
+
+- (void) isBluetoothAuthorized: (CDVInvokedUrlCommand *)command
 {
     [self.commandDelegate runInBackground:^{
         @try {
@@ -191,10 +212,10 @@ static NSString*const LOG_TAG = @"Diagnostic_Bluetooth[native]";
 
 - (BOOL) isBluetoothAuthorized
 {
-    if([CBPeripheralManager authorizationStatus] == CBPeripheralManagerAuthorizationStatusAuthorized) {
-        return true;
+    if ([self isGreaterOrEqualsIos13]) {
+        return [CBPeripheralManager authorization] != CBManagerAuthorizationNotDetermined;
     } else {
-        return false;
+        return [CBPeripheralManager authorizationStatus] == CBPeripheralManagerAuthorizationStatusAuthorized;
     }
 }
 

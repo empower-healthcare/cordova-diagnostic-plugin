@@ -488,6 +488,22 @@ var Diagnostic = (function(){
         }
     };
 
+    Diagnostic.isGreaterOrEqualsIos13 = function(successCallback, errorCallback) {
+        if(cordova.plugins.diagnostic.bluetooth){
+            cordova.plugins.diagnostic.bluetooth.isGreaterOrEqualsIos13.apply(this, arguments);
+        }else{
+            throw "Diagnostic Bluetooth module is not installed";
+        }
+    };
+
+    Diagnostic.isBluetoothAuthorized = function(successCallback, errorCallback) {
+        if(cordova.plugins.diagnostic.bluetooth){
+            cordova.plugins.diagnostic.bluetooth.isBluetoothAuthorized.apply(this, arguments);
+        }else{
+            throw "Diagnostic Bluetooth module is not installed";
+        }
+    };
+
     /**
      * Requests Bluetooth authorization for the application.
      * The outcome of the authorization request can be determined by registering a handler using `registerBluetoothStateChangeHandler()`.

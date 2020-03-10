@@ -102,6 +102,14 @@ var Diagnostic_Bluetooth = (function(){
             []);
     };
 
+    Diagnostic_Bluetooth.isGreaterOrEqualsIos13 = function(successCallback, errorCallback) {
+        return cordova.exec(Diagnostic._ensureBoolean(successCallback),
+            errorCallback,
+            'Diagnostic_Bluetooth',
+            'isGreaterOrEqualsIos13',
+            []);
+    };
+
     Diagnostic_Bluetooth.isBluetoothAuthorized = function(successCallback, errorCallback) {
         return cordova.exec(Diagnostic._ensureBoolean(successCallback),
             errorCallback,
